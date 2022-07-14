@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from API_IssueTrackingSystem.models import Project, Contributor, Issue, Comment
+from django.contrib.auth.models import User
 
 
 class ContributorSerializer(serializers.ModelSerializer):
@@ -21,9 +22,13 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProjectSerializers(serializers.ModelSerializer):
-    #issues = IssueSerializer(many=True)
-
+class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
+        fields = '__all__'
+
+
+class UsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
         fields = '__all__'
