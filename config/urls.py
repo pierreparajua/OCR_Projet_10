@@ -28,12 +28,11 @@ router.register('comments', CommentViewSet)
 
 project_nested_router = routers.NestedSimpleRouter(router, r'projects', lookup='project')
 project_nested_router.register(r'issues', IssueViewSet, basename='project-issue')
-#project_nested_router.register(r'users', UserViewSet, basename='project-user')
+project_nested_router.register(r'users', UserViewSet, basename='user-issue')
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
     path('', include(project_nested_router.urls))
-    #path('', include(project_nested_router.urls))
 ]
