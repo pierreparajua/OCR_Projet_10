@@ -12,17 +12,19 @@ class ProjectViewSet(ModelViewSet):
 
 
 class ContributorViewSet(ModelViewSet):
-    queryset = Contributor.objects.all()
-    serializer_class = ContributorSerializer
+    serializer_class = UsersSerializer
+
+    def get_queryset(self):
+        contributors = Contributor.objects.filter(project=self.kwargs.get('project_pk'))
+        users = [contributor.user for contributor in contributors]
+        return users
 
 
 class IssueViewSet(ModelViewSet):
     serializer_class = IssueSerializer
 
     def get_queryset(self):
-        path = self.request.get_full_path()
-        project_id = int([i for i in path if i.isdigit()][0])
-        queryset = Issue.objects.filter(project=project_id)
+        queryset = Issue.objects.all()
         return queryset
 
 
@@ -32,12 +34,6 @@ class CommentViewSet(ModelViewSet):
 
 
 class UserViewSet(ModelViewSet):
+    queryset = User.objects.all()
     serializer_class = UsersSerializer
 
-    def get_queryset(self):
-        path = self.request.get_full_path()
-        project_id = int([i for i in path if i.isdigit()][0])
-        contributors = Contributor.objects.filter(project=project_id)
-        users = [contributor.user for contributor in contributors]
-        queryset = users
-        return queryset

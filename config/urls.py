@@ -22,17 +22,19 @@ from API_IssueTrackingSystem.views import ProjectViewSet, ContributorViewSet, Is
 
 router = routers.DefaultRouter()
 router.register('projects', ProjectViewSet)
-router.register('contributors', ContributorViewSet)
-router.register('issues', IssueViewSet, basename="issue")
-router.register('comments', CommentViewSet)
 
-project_nested_router = routers.NestedSimpleRouter(router, r'projects', lookup='project')
-project_nested_router.register(r'issues', IssueViewSet, basename='project-issue')
-project_nested_router.register(r'users', UserViewSet, basename='user-issue')
+
+project_router = routers.NestedDefaultRouter(router, r'projects', lookup='project')
+project_router.register(r'issues', IssueViewSet, basename='issues')
+project_router.register(r'users', ContributorViewSet, basename='users')
+
+issue_router = routers.NestedDefaultRouter(project_router, r'issues', lookup='issues')
+issue_router.register(r'comments', CommentViewSet, basename="comments")
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
-    path('', include(project_nested_router.urls))
+    path('', include(project_router.urls)),
+    path('', include(issue_router.urls))
 ]
