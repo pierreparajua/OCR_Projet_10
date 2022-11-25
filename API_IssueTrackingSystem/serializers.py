@@ -4,12 +4,6 @@ from API_IssueTrackingSystem.models import Project, Contributor, Issue, Comment
 from django.contrib.auth.models import User
 
 
-class ContributorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Contributor
-        fields = '__all__'
-
-
 class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
@@ -25,10 +19,21 @@ class CommentSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = ['id', 'title', 'description', 'type', 'author']
+        extra_kwargs = {'author': {'read_only': True}}
 
 
 class UsersSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+
+class ContributorSerializer(serializers.ModelSerializer):
+    user = UsersSerializer()
+
+    class Meta:
+        model = Contributor
+        fields = ['id', 'user']
+

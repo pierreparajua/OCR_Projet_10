@@ -1,4 +1,6 @@
+from rest_framework import generics
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 
 from API_IssueTrackingSystem.models import Project, Contributor, Issue, Comment
@@ -9,22 +11,26 @@ from API_IssueTrackingSystem.serializers import ProjectSerializer, ContributorSe
 class ProjectViewSet(ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        project = serializer.save(author=self.request.user)
+        contributor = Contributor(user=self.request.user, project=project)
 
 
 class ContributorViewSet(ModelViewSet):
-    serializer_class = UsersSerializer
+    serializer_class = ContributorSerializer
 
     def get_queryset(self):
         contributors = Contributor.objects.filter(project=self.kwargs.get('project_pk'))
-        users = [contributor.user for contributor in contributors]
-        return users
+        return contributors
 
 
 class IssueViewSet(ModelViewSet):
     serializer_class = IssueSerializer
 
     def get_queryset(self):
-        queryset = Issue.objects.all()
+        queryset = Issue.objects.filter(project=self.kwargs.get('project_pk'))
         return queryset
 
 
@@ -33,7 +39,6 @@ class CommentViewSet(ModelViewSet):
     serializer_class = CommentSerializer
 
 
-class UserViewSet(ModelViewSet):
+class UserViewSet(generics.CreateAPIView):
     queryset = User.objects.all()
     serializer_class = UsersSerializer
-
