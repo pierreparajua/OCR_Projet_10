@@ -4,18 +4,26 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 
 from API_IssueTrackingSystem.models import Project, Contributor, Issue, Comment
-from API_IssueTrackingSystem.serializers import ProjectSerializer, ContributorSerializer, \
-    IssueSerializer, CommentSerializer, UsersSerializer
+from API_IssueTrackingSystem.serializers import ProjectSerializer, ProjectSerializerFull,\
+    ContributorSerializer, IssueSerializer, CommentSerializer, UsersSerializer
 
 
 class ProjectViewSet(ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    serializer_class_full = ProjectSerializerFull
+
     permission_classes = [IsAuthenticated]
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return self.serializer_class_full
+        return super().get_serializer_class()
 
     def perform_create(self, serializer):
         project = serializer.save(author=self.request.user)
-        contributor = Contributor(user=self.request.user, project=project)
+        contributor = Contributor(user=self.request.user, project=project, role= 'auteur' )
+        contributor.save()
 
 
 class ContributorViewSet(ModelViewSet):

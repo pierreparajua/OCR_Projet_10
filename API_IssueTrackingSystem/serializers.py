@@ -16,10 +16,17 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializerFull(serializers.ModelSerializer):
     class Meta:
         model = Project
         fields = ['id', 'title', 'description', 'type', 'author']
+        extra_kwargs = {'author': {'read_only': True}}
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'title', 'author']
         extra_kwargs = {'author': {'read_only': True}}
 
 
@@ -31,9 +38,6 @@ class UsersSerializer(serializers.ModelSerializer):
 
 
 class ContributorSerializer(serializers.ModelSerializer):
-    user = UsersSerializer()
-
     class Meta:
         model = Contributor
-        fields = ['id', 'user']
-
+        fields = ['id', 'user', 'project']

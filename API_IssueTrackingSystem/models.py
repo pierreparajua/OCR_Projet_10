@@ -17,9 +17,11 @@ class Project(models.Model):
 class Contributor(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    permission = models.CharField(max_length=50, blank=True)
     choices = [('auteur', 'auteur'), ('collaborateur', 'collaborateur')]
     role = models.CharField(max_length=50, choices=choices)
+
+    class Meta:
+        unique_together = ('project', 'user')
 
 
 class Issue(models.Model):
